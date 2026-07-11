@@ -431,11 +431,10 @@ async function completeWorkerOrder() {
 }
 
 function connectLiveEvents() {
-  if (!state.token || typeof EventSource === "undefined") return;
+  if (!state.token) return;
   state.eventSource?.close();
-  const eventSource = new EventSource(`/api/events?token=${encodeURIComponent(state.token)}`);
   let refreshTimer;
-  const refresh = () => {
+  const refresh = (delay = 180) => {
     clearTimeout(refreshTimer);
     refreshTimer = setTimeout(async () => {
       try {
@@ -448,8 +447,14 @@ function connectLiveEvents() {
       } catch {
         // The next server event or navigation will retry the live refresh.
       }
-    }, 180);
+    }, delay);
   };
+  if (location.hostname.endsWith("netlify.app") || typeof EventSource === "undefined") {
+    const pollingTimer = setInterval(() => refresh(0), 4_000);
+    state.eventSource = { close: () => clearInterval(pollingTimer) };
+    return;
+  }
+  const eventSource = new EventSource(`/api/events?token=${encodeURIComponent(state.token)}`);
   eventSource.addEventListener("order", refresh);
   eventSource.addEventListener("menu", async () => {
     if (state.user?.role === "admin") await loadAdmin({ quiet: true });

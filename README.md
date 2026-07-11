@@ -31,13 +31,14 @@ pnpm test
 
 The integration test covers student ordering, QR lookup, worker item fulfilment, handover completion, and role permissions.
 
-## Production deployment
+## Netlify deployment
 
-This application needs a Node server, so it cannot be deployed as a static-only Netlify site. The included `render.yaml` creates a free Render web service, runs `pnpm start`, and checks `/api/health`.
+The included Netlify configuration deploys the frontend, the complete API as a Netlify Function, uploaded menu images in Netlify Blobs, and the SQLite database as a strongly consistent Blob snapshot.
 
-1. Open the Render dashboard and choose **New > Blueprint**.
-2. Connect the `vishvaa-vp/cafe-de-move-on-` GitHub repository.
-3. Select the `main` branch and apply the Blueprint.
-4. Open the generated Render URL after the health check becomes live.
+1. In Netlify, open **Project configuration > Build & deploy > Continuous deployment**.
+2. Confirm the repository is `vishvaa-vp/cafe-de-move-on-` and the production branch is `main`.
+3. Leave the base directory empty. Netlify reads build and function settings from `netlify.toml`.
+4. Trigger **Deploys > Trigger deploy > Clear cache and deploy site**.
+5. Test `/api/health`, then sign in with one of the demo accounts.
 
-The free service uses temporary SQLite storage. It is suitable for demos and automatically restores the seeded accounts and sample data if the service filesystem resets. Long-term production data requires a persistent database service.
+On Netlify, live status uses four-second polling because serverless functions cannot maintain the original long-running event stream. Netlify Blobs works best for low-traffic demos with infrequent overlapping writes; a relational cloud database is recommended before high-volume production use.

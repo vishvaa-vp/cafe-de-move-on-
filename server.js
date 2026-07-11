@@ -1540,7 +1540,9 @@ export function createCanteenServer(options = {}) {
       if (url.pathname === "/api/admin/upload" && method === "POST") {
         const body = await readJson(request);
         try {
-          const imageUrl = uploadImage(body.dataUrl, body.fileName);
+          const imageUrl = options.uploadImage
+            ? await options.uploadImage(body.dataUrl, body.fileName)
+            : uploadImage(body.dataUrl, body.fileName);
           sendJson(response, 201, { imageUrl });
         } catch (error) {
           sendError(response, error.statusCode || 400, error.message);
@@ -1663,6 +1665,7 @@ export function createCanteenServer(options = {}) {
     async close() {
       clearInterval(heartbeat);
       await new Promise((resolveClose) => server.close(resolveClose));
+      db.exec("PRAGMA wal_checkpoint(TRUNCATE)");
       db.close();
     },
   };
