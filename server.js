@@ -7,7 +7,7 @@ import { DatabaseSync } from "node:sqlite";
 import QRCode from "qrcode";
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
-const DEFAULT_DATABASE = join(ROOT, "data", "canteenflow.db");
+const DEFAULT_DATABASE = process.env.DATABASE_PATH || join(ROOT, "data", "canteenflow.db");
 const ACTIVE_ORDER_STATUSES = ["queued", "preparing", "ready"];
 const ORDER_STATUSES = [...ACTIVE_ORDER_STATUSES, "completed", "cancelled"];
 const MIME_TYPES = {
@@ -1650,7 +1650,7 @@ export function createCanteenServer(options = {}) {
     databasePath,
     db,
     server,
-    async start(port = options.port ?? number(process.env.PORT, 3000), host = options.host || process.env.HOST || "127.0.0.1") {
+    async start(port = options.port ?? number(process.env.PORT, 3000), host = options.host || process.env.HOST || (process.env.NODE_ENV === "production" ? "0.0.0.0" : "127.0.0.1")) {
       await new Promise((resolveStart, rejectStart) => {
         server.once("error", rejectStart);
         server.listen(port, host, () => {

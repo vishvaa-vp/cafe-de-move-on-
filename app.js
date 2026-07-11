@@ -159,9 +159,13 @@ async function api(path, options = {}) {
   if (state.token) headers.set("Authorization", `Bearer ${state.token}`);
   if (options.body && !(options.body instanceof FormData)) headers.set("Content-Type", "application/json");
   const response = await fetch(path, { ...options, headers });
-  const payload = await response.json().catch(() => ({}));
+  const contentType = response.headers.get("content-type") || "";
+  const payload = contentType.includes("application/json") ? await response.json().catch(() => ({})) : {};
   if (!response.ok) {
-    const error = new Error(payload.error || "Something went wrong");
+    const deploymentHint = location.hostname.endsWith("netlify.app")
+      ? "Backend unavailable. This full-stack app must run on the configured Render service."
+      : "The server could not complete this request.";
+    const error = new Error(payload.error || deploymentHint);
     error.status = response.status;
     error.details = payload.details;
     if (response.status === 401 && state.user) logout(false);
