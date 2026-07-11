@@ -2,7 +2,7 @@ services:
   - type: web
     name: cafe-de-move-on
     runtime: node
-    plan: starter
+    plan: free
     branch: main
     buildCommand: corepack enable && pnpm install --frozen-lockfile
     startCommand: pnpm start
@@ -14,8 +14,4 @@ services:
       - key: NODE_VERSION
         value: 22.14.0
       - key: DATABASE_PATH
-        value: /var/data/cafe-de-move-on.db
-    disk:
-      name: cafe-de-move-on-data
-      mountPath: /var/data
-      sizeGB: 1
+        value: /tmp/cafe-de-move-on.db

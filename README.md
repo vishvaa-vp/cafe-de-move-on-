@@ -33,11 +33,11 @@ The integration test covers student ordering, QR lookup, worker item fulfilment,
 
 ## Production deployment
 
-This application needs a persistent Node server and SQLite disk, so it cannot be deployed as a static-only Netlify site. The included `render.yaml` creates a Render web service, runs `pnpm start`, checks `/api/health`, and stores the database on a persistent disk.
+This application needs a Node server, so it cannot be deployed as a static-only Netlify site. The included `render.yaml` creates a free Render web service, runs `pnpm start`, and checks `/api/health`.
 
 1. Open the Render dashboard and choose **New > Blueprint**.
 2. Connect the `vishvaa-vp/cafe-de-move-on-` GitHub repository.
 3. Select the `main` branch and apply the Blueprint.
 4. Open the generated Render URL after the health check becomes live.
 
-The persistent disk requires Render's Starter plan. Without a disk, SQLite data can reset after a restart or redeploy.
+The free service uses temporary SQLite storage. It is suitable for demos and automatically restores the seeded accounts and sample data if the service filesystem resets. Long-term production data requires a persistent database service.
