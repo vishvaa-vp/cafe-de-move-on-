@@ -1,0 +1,18 @@
+{
+  "name": "cafe-de-move-on-full-stack",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Cafe de Move On! full-stack multi-canteen ordering, wallet, queue and administration web app.",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  }
+}
